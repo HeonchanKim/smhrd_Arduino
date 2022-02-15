@@ -30,8 +30,8 @@ void loop() {
 
     HTTPClient http;
 
-    //http.begin("http://121.147.52.204:8081/IoT/Exam01");
-    http.begin("http://project-student.ddns.net/nayeho/Exam01"); //Specify the URL
+    http.begin("http://59.0.236.246:8081/IoT/Exam01");
+    //http.begin("http://project-student.ddns.net/nayeho/Exam01"); //Specify the URL
     int httpCode = http.GET();                                        //Make the request
 
     if (httpCode > 0) { //Check for the returning code

@@ -38,10 +38,21 @@ void loop()
     gps.f_get_position(&flat, &flon, &age);
     Serial.print("LAT=");
     Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
+    float x = (flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat);
+    long r1 = x*1000000;
+    float result1 = r1 / 1000000;
     Serial.print(" ");
     Serial.print("LON=");
     Serial.print(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
-    Serial.println("");
+    float y = (flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon);
+    long r2 = y*1000000;
+    float result2 = r2 / 1000000;
+    Serial.println();
+    Serial.print("parsing LAT = ");
+    Serial.println(r1);
+    Serial.print("parsing LON = ");  
+    Serial.println(r2);
+
   }else{
     Serial.print("LAT=FAIL");
     Serial.print(" ");

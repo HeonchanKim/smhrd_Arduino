@@ -11,7 +11,7 @@ SoftwareSerial ss(18, 19); // 18tx 19rx
 const char* ssid = "iptime";
 const char* password = "rlagjscks1234";
 
-const char* serverName = "http://192.168.0.10:8081/27.8Hz/test_gps.jsp";
+const char* serverName = "http://192.168.0.10:8081/27.8Hz/kakaoMap_gps.jsp";
 
 unsigned long lastTime = 0;
 unsigned long timerDelay = 5000;
@@ -77,16 +77,15 @@ void loop() {
         gps.f_get_position(&flat, &flon, &age);
         Serial.print("LAT=");
         Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
-        float x = flat;
+        double x = (flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat);
+        int result_lat = x*1000000;
         Serial.print(" ");
         Serial.print("LON=");
         Serial.print(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
-        float y = flon;
+        double y = (flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon);
+        int result_lon = y*1000000;
         
-        Serial.println("");
-        Serial.println(x);
-        Serial.println(y);
-          httpRequestData = "LAT=" + (String)x + "&LON=" + (String)y;
+          httpRequestData = "LAT=" + (String)result_lat + "&LON=" + (String)result_lon;
       }
 
 

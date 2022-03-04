@@ -1,0 +1,9 @@
+압력센서 아날로그
+충격센서 아날로그
+
+심박/산소포화, I2C
+체온 센서 I2C
+
+스피커 UART
+// co2sensor UART 
+GPS UART

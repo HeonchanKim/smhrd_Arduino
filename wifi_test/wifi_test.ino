@@ -8,10 +8,10 @@ SoftwareSerial ss(18, 19); // 18tx 19rx
 
 //KT_GiGA_8403
 //6az42bd158
-const char* ssid = "iptime";
-const char* password = "rlagjscks1234";
+const char* ssid = "KT_GiGA_8403";
+const char* password = "6az42bd158";
 
-const char* serverName = "http://192.168.0.10:8081/27.8Hz/kakaoMap_gps.jsp";
+const char* serverName = "http://172.30.1.21:8081/27.8Hz/kakaoMap_gps.jsp";
 
 unsigned long lastTime = 0;
 unsigned long timerDelay = 5000;

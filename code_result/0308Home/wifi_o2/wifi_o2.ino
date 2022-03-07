@@ -16,10 +16,11 @@ uint32_t tsLastReport = 0;
 const char* ssid = "heon";
 const char* password = "rlagjscks1234";
 
-const char* serverName = "http://192.168.0.8:8081/27.8Hz/getValuesTest.jsp";
+const char* serverName = "http://192.168.0.10:8081/27.8Hz/getValuesTest.jsp";
 
 unsigned long lastTime = 0;
 unsigned long timerDelay = 5000;
+long prev_time;
 
 void setup() {
   Serial.begin(115200);
@@ -44,6 +45,15 @@ void setup() {
 }
 
 void loop() {
+  pox.update();
+  Serial.print("심박수:");
+  Serial.print(pox.getHeartRate());
+  Serial.print("bpm / 산소포화도:");
+  Serial.print(pox.getSpO2());
+  Serial.println("%");
+  delay(100);
+
+
   //Send an HTTP POST request every 10 minutes
   String httpRequestData = "";
   if ((millis() - lastTime) > timerDelay) {
@@ -63,29 +73,25 @@ void loop() {
       //---------------------------------------------------------------------------
       //---------------------------------------------------------------------------
       //---------------------------------------------------------------------------
-      pox.update();
 
-      // For both, a value of 0 means "invalid"
-      if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
-        Serial.print("심박수:");
-        Serial.print(pox.getHeartRate());
-        Serial.print("bpm / 산소포화도:");
-        Serial.print(pox.getSpO2());
-        Serial.println("%");
 
-        tsLastReport = millis();
-      }
-
-      httpRequestData = "HR" + (String)pox.getHeartRate() + "&O2=" + (String)pox.getSpO2();
+      httpRequestData = "HR=" + (String)pox.getHeartRate() + "&O2=" + (String)pox.getSpO2();
       //---------------------------------------------------------------------------
       //---------------------------------------------------------------------------
       //---------------------------------------------------------------------------
+
 
       // Send HTTP POST request
       int httpResponseCode = http.POST(httpRequestData);
 
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
+
+      if (millis() - prev_time > 500) {
+        pox = PulseOximeter();
+        pox.begin();
+      }
+      prev_time = millis();
 
       // Free resources
       http.end();
@@ -95,4 +101,7 @@ void loop() {
     }
     lastTime = millis();
   }
+
+
+
 }

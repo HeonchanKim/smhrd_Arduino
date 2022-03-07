@@ -12,6 +12,8 @@ PulseOximeter pox;
 
 uint32_t tsLastReport = 0;
 int sensor;
+long prev_time;
+
 
 void setup()
 {
@@ -48,12 +50,8 @@ void loop()
   sensor = analogRead(2);
   pox.update();
 
-  //gps
-  bool newData = false;
-  unsigned long chars;
-  unsigned short sentences, failed;
-
   if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
+
     Serial.print("심박수:");
     Serial.print(pox.getHeartRate());
     Serial.print("bpm / 산소포화도:");
@@ -70,32 +68,39 @@ void loop()
     Serial.print("충격 감지: ");
     Serial.println(sensor);
 
-    //심박수가 0이 아닐 때 gps 측정
-    if (pox.getHeartRate() != 0) {
-      for (unsigned long start = millis(); millis() - start < 1000;)
-      {
-        while (ss.available())
-        {
-          char c = ss.read();
-          // Serial.write(c); // uncomment this line if you want to see the GPS data flowing
-          if (gps.encode(c)) // Did a new valid sentence come in?
-            newData = true;
-        }
-      }
+  }
+  delay(50);
 
-      if (newData)
+  bool newData = false;
+  unsigned long chars;
+  unsigned short sentences, failed;
+  if (millis() - prev_time > 100000) {
+
+
+    for (unsigned long start = millis(); millis() - start < 1000;)
+    {
+      while (ss.available())
       {
-        float flat, flon;
-        unsigned long age;
-        gps.f_get_position(&flat, &flon, &age);
-        Serial.print("LAT=");
-        Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
-        Serial.print(" LON=");
-        Serial.println(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
+        char c = ss.read();
+        // Serial.write(c); // uncomment this line if you want to see the GPS data flowing
+        if (gps.encode(c)) // Did a new valid sentence come in?
+          newData = true;
       }
     }
+
+    if (newData)
+    {
+      float flat, flon;
+      unsigned long age;
+      gps.f_get_position(&flat, &flon, &age);
+      Serial.print("LAT=");
+      Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
+      Serial.print(" LON=");
+      Serial.println(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
+    }
+    pox = PulseOximeter();
+    pox.begin();
+    prev_time = millis();
   }
 
-
-  delay(100);
 }// end of loop

@@ -9,7 +9,7 @@
 PulseOximeter pox;
 uint32_t tsLastReport = 0;
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
-SoftwareSerial co2sensor(17, 25);          //SoftwareSerial ss핀을 2번 3번으로 지정
+SoftwareSerial co2sensor(17, 5);          //SoftwareSerial ss핀을 2번 3번으로 지정
 MHZ19 mhz(&co2sensor);
 
 
@@ -40,6 +40,7 @@ void setup() {
 }
 
 void loop() {
+  MHZ19_RESULT response = mhz.retrieveData();
   pox.update();
 
   if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
@@ -51,30 +52,23 @@ void loop() {
 
     Serial.print("체온 = ");
     Serial.print(mlx.readObjectTempC());
-    Serial.println("*C");
+    Serial.print("*C ");
 
     tsLastReport = millis();
 
-    
+    //심박수가 0이 아닐 때 이산화탄소 출력
+    if (pox.getHeartRate() != 0) {
+      if (response == MHZ19_RESULT_OK)
+      {
+        Serial.print(F("이산화탄소: "));
+        Serial.println(mhz.getCO2());        //시리얼 모니터에 Co2값 표시
+      } else { //그 외엔
+        Serial.print(F("Error, code: "));        //시리얼 모니터에 에러코드 표시
+        Serial.println(response);
+      }
+    }
   }
 
 
   delay(10);
-
-}
-
-
-void co2()
-{
-  MHZ19_RESULT response = mhz.retrieveData();
-
-  if (response == MHZ19_RESULT_OK)
-  {
-    Serial.print(F("CO2: "));
-    Serial.println(mhz.getCO2());        //시리얼 모니터에 Co2값 표시
-  }else{ //그 외엔
-    Serial.print(F("Error, code: "));        //시리얼 모니터에 에러코드 표시
-    Serial.println(response);
-  }
-//  delay(10);
-} 
+}// end of loop

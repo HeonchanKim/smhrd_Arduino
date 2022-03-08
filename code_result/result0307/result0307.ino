@@ -74,10 +74,10 @@ void loop()
   bool newData = false;
   unsigned long chars;
   unsigned short sentences, failed;
-  if (millis() - prev_time > 100000) {
+  if (millis() - prev_time > 100) {
 
 
-    for (unsigned long start = millis(); millis() - start < 1000;)
+    for (unsigned long start = millis(); millis() - start < 100;)
     {
       while (ss.available())
       {
